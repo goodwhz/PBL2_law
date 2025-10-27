@@ -24,14 +24,14 @@
 
           <!-- Messages -->
           <div v-for="(message, index) in messages" :key="index" 
-               :class="['flex', message.role === 'user' ? 'justify-end' : 'justify-start']">
+               :class="['flex', message.role === 'user' ? 'justify-end' : 'justify-start', 'mb-4']">
             <div :class="[
               'max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl',
               message.role === 'user' 
-                ? 'bg-primary-500 text-white rounded-br-none' 
-                : 'bg-gray-100 text-gray-900 rounded-bl-none'
+                ? 'bg-primary-500 text-white rounded-br-none text-base' 
+                : 'bg-gray-100 text-gray-900 rounded-bl-none text-lg font-medium'
             ]">
-              <div class="whitespace-pre-wrap">{{ message.content }}</div>
+              <div class="whitespace-pre-wrap leading-relaxed">{{ message.content }}</div>
             </div>
           </div>
 
