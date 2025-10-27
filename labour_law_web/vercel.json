@@ -16,9 +16,9 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "@vite_api_url",
-    "VITE_APP_ID": "@vite_app_id", 
-    "VITE_API_KEY": "@vite_api_key"
+    "VITE_API_URL": "@next_public_api_url",
+    "VITE_APP_ID": "@next_public_app_id", 
+    "VITE_API_KEY": "@next_public_app_key"
   },
   "buildCommand": "npm run build",
   "outputDirectory": "dist",

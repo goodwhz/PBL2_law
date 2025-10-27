@@ -3,13 +3,6 @@
   "version": "1.0.0",
   "description": "劳动法咨询平台 - 精美网页版",
   "type": "module",
-  "pnpm": {
-    "allowedDeprecatedVersions": {
-      "@parcel/watcher": "2.4.0",
-      "sharp": "0.32.6",
-      "unrs-resolver": "1.0.0"
-    }
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
