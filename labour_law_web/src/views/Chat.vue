@@ -3,7 +3,20 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">智能法律咨询</h1>
+        <div class="flex justify-between items-center mb-4">
+          <div></div> <!-- 占位元素 -->
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900">智能法律咨询</h1>
+          <button 
+            @click="clearMessages" 
+            class="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+            title="清空聊天记录"
+            v-if="messages.length > 0"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
         <p class="text-lg text-gray-600">请输入您的劳动法相关问题，AI助手将为您提供专业解答</p>
       </div>
 
@@ -118,6 +131,43 @@ const quickQuestions = [
   '工伤认定需要哪些材料？'
 ]
 
+// 处理AI回复内容，去除</think>等调试信息
+const processAIResponse = (answer) => {
+  if (!answer) return answer
+  
+  let processedAnswer = answer
+  
+  // 1. 去除</think>输出
+  processedAnswer = processedAnswer.replace(/</think>/g, '')
+  
+  // 2. 去除其他可能的调试信息
+  processedAnswer = processedAnswer.replace(/思考：.*?(?=
+
+|$)/g, '')
+  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
+  processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '')
+  processedAnswer = processedAnswer.replace(/工作流步骤.*?(?=
+|$)/g, '')
+  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ')
+  
+  // 3. 清理文本格式
+  processedAnswer = processedAnswer.replace(/
+\s*
+/g, '
+
+')
+  processedAnswer = processedAnswer.replace(/\s+/g, ' ')
+  return processedAnswer.trim()
+}
+
+// 删除所有咨询记录
+const clearMessages = () => {
+  // 保留欢迎消息，只删除咨询记录
+  if (messages.value.length > 0) {
+    messages.value = [] // 清空所有消息
+  }
+}
+
 const scrollToBottom = () => {
   nextTick(() => {
     if (messagesContainer.value) {
@@ -148,11 +198,13 @@ const sendMessage = async () => {
 
   try {
     const response = await sendChatMessage(userMessage)
+    // 处理AI回复内容
+    const processedResponse = processAIResponse(response)
     
     // Add AI response
     messages.value.push({
       role: 'assistant',
-      content: response
+      content: processedResponse
     })
   } catch (error) {
     console.error('发送消息失败:', error)
