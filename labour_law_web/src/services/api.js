@@ -77,11 +77,14 @@ export const processAIResponse = (answer) => {
   // 匹配"思考："开头直到下一个空行或文本结束
   processedAnswer = processedAnswer.replace(/思考：[^\n]*(\n[^\n]*)*?(?=\n\s*\n|$)/g, '')
   
-  // 3. 去除工作流节点信息 - 使用更兼容的方式
+  // 3. 去除工作流节点信息 - 加强过滤
   processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
   processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '')
   processedAnswer = processedAnswer.replace(/工作流步骤[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
+  processedAnswer = processedAnswer.replace(/工作流节点[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
+  processedAnswer = processedAnswer.replace(/\[工作流\].*?(?=\n|$)/g, '')
   processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ')
+  processedAnswer = processedAnswer.replace(/→/g, '')
   
   // 4. 清理文本格式 - 使用更兼容的方式
   processedAnswer = processedAnswer.replace(/\n\s*\n/g, '\n\n')
