@@ -10,7 +10,7 @@
             @click="clearMessages" 
             class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 shadow-md"
             title="清空聊天记录"
-            v-if="messages.length > 0"
+            v-if="hasChatMessages"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import { sendChatMessage, processAIResponse } from '../services/api'
 
 const messages = ref([])
@@ -122,6 +122,9 @@ const inputMessage = ref('')
 const isLoading = ref(false)
 const messagesContainer = ref(null)
 const messageInput = ref(null)
+
+// 计算是否有聊天消息（排除欢迎消息）
+const hasChatMessages = computed(() => messages.value.length > 0)
 
 const quickQuestions = [
   '劳动合同应该包含哪些内容？',
