@@ -1,32 +1,18 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "env": {
-    "VITE_API_URL": "@next_public_api_url",
-    "VITE_APP_ID": "@next_public_app_id", 
-    "VITE_API_KEY": "@next_public_app_key"
-  },
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "installCommand": "npm install",
   "functions": {
     "api/**/*.js": {
       "maxDuration": 30
     }
   },
-  "installCommand": "npm install --ignore-scripts"
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }

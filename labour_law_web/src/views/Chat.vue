@@ -162,7 +162,7 @@ const filterAIResponse = (content) => {
   let filteredContent = content
   
   // 1. 过滤</think>标记及其内容
-  filteredContent = filteredContent.replace(/</think>.*? </think>/gs, '')
+  filteredContent = filteredContent.replace(/</think>[^]*?</think>/gs, '')
   filteredContent = filteredContent.replace(/</think>/g, '')
   
   // 2. 过滤工作流节点信息
