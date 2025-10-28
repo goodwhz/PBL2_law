@@ -162,41 +162,22 @@ const filterAIResponse = (content) => {
   let filteredContent = content
   
   // 1. 过滤</think>标记及其内容
-  filteredContent = filteredContent.replace(/</think>.*?</think>/gs, '')
-  filteredContent = filteredContent.replace(/</think>.*?</think>/gs, '')
-  filteredContent = filteredContent.replace(/</think>/g, '')
+  filteredContent = filteredContent.replace(/</think>.*? </think>/gs, '')
   filteredContent = filteredContent.replace(/</think>/g, '')
   
   // 2. 过滤工作流节点信息
   filteredContent = filteredContent.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
   filteredContent = filteredContent.replace(/节点\s*\d+/g, '')
-  filteredContent = filteredContent.replace(/工作流步骤[^
-]*(
-[^
-]*)*?(?=
-|$)/g, '')
-  filteredContent = filteredContent.replace(/工作流节点[^
-]*(
-[^
-]*)*?(?=
-|$)/g, '')
-  filteredContent = filteredContent.replace(/\[工作流\].*?(?=
-|$)/g, '')
+  filteredContent = filteredContent.replace(/工作流步骤[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
+  filteredContent = filteredContent.replace(/工作流节点[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
+  filteredContent = filteredContent.replace(/\[工作流\].*?(?=\n|$)/g, '')
   filteredContent = filteredContent.replace(/\s+→\s+/g, ' ')
   filteredContent = filteredContent.replace(/→/g, '')
   
   // 3. 清理多余空行和空格
-  filteredContent = filteredContent.replace(/
-\s*
-/g, '
-
-')
-  filteredContent = filteredContent.replace(/^\s*
-/gm, '')
-  filteredContent = filteredContent.replace(/
-{3,}/g, '
-
-')
+  filteredContent = filteredContent.replace(/\n\s*\n/g, '\n\n')
+  filteredContent = filteredContent.replace(/^\s*\n/gm, '')
+  filteredContent = filteredContent.replace(/\n{3,}/g, '\n\n')
   
   return filteredContent.trim()
 }

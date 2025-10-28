@@ -69,8 +69,6 @@ export const processAIResponse = (answer) => {
   
   // 1. 去除</think>输出以及夹在其中的内容
   processedAnswer = processedAnswer.replace(/</think>.*?</think>/gs, '')
-  processedAnswer = processedAnswer.replace(/</think>.*?</think>/gs, '')
-  processedAnswer = processedAnswer.replace(/</think>/g, '')
   processedAnswer = processedAnswer.replace(/</think>/g, '')
   
   // 2. 去除思考过程等调试信息 - 使用更兼容的方式
