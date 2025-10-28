@@ -67,9 +67,9 @@ export const processAIResponse = (answer) => {
   
   let processedAnswer = answer
   
-  // 1. 去除</think>输出（包括</think>和</think>）- 加强过滤
-  processedAnswer = processedAnswer.replace(/</think>/g, '')
-  processedAnswer = processedAnswer.replace(/</think>/g, '')
+  // 1. 去除</think>输出以及夹在其中的内容
+  processedAnswer = processedAnswer.replace(/</think>.*?</think>/gs, '')
+  processedAnswer = processedAnswer.replace(/</think>.*?</think>/gs, '')
   processedAnswer = processedAnswer.replace(/</think>/g, '')
   processedAnswer = processedAnswer.replace(/</think>/g, '')
   
