@@ -155,6 +155,52 @@ const setQuickQuestion = (question) => {
   messageInput.value?.focus()
 }
 
+// 前端过滤函数 - 确保工作流节点信息和</think>标记被隐藏
+const filterAIResponse = (content) => {
+  if (!content) return content
+  
+  let filteredContent = content
+  
+  // 1. 过滤</think>标记及其内容
+  filteredContent = filteredContent.replace(/</think>.*?</think>/gs, '')
+  filteredContent = filteredContent.replace(/</think>.*?</think>/gs, '')
+  filteredContent = filteredContent.replace(/</think>/g, '')
+  filteredContent = filteredContent.replace(/</think>/g, '')
+  
+  // 2. 过滤工作流节点信息
+  filteredContent = filteredContent.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
+  filteredContent = filteredContent.replace(/节点\s*\d+/g, '')
+  filteredContent = filteredContent.replace(/工作流步骤[^
+]*(
+[^
+]*)*?(?=
+|$)/g, '')
+  filteredContent = filteredContent.replace(/工作流节点[^
+]*(
+[^
+]*)*?(?=
+|$)/g, '')
+  filteredContent = filteredContent.replace(/\[工作流\].*?(?=
+|$)/g, '')
+  filteredContent = filteredContent.replace(/\s+→\s+/g, ' ')
+  filteredContent = filteredContent.replace(/→/g, '')
+  
+  // 3. 清理多余空行和空格
+  filteredContent = filteredContent.replace(/
+\s*
+/g, '
+
+')
+  filteredContent = filteredContent.replace(/^\s*
+/gm, '')
+  filteredContent = filteredContent.replace(/
+{3,}/g, '
+
+')
+  
+  return filteredContent.trim()
+}
+
 const sendMessage = async () => {
   if (!inputMessage.value.trim() || isLoading.value) return
 
@@ -172,13 +218,14 @@ const sendMessage = async () => {
 
   try {
     const response = await sendChatMessage(userMessage)
-    // 处理AI回复内容
+    // 处理AI回复内容 - 双重过滤确保效果
     const processedResponse = processAIResponse(response)
+    const finalResponse = filterAIResponse(processedResponse)
     
     // Add AI response
     messages.value.push({
       role: 'assistant',
-      content: processedResponse
+      content: finalResponse
     })
   } catch (error) {
     console.error('发送消息失败:', error)
