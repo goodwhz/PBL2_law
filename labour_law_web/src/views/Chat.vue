@@ -114,7 +114,7 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
-import { sendChatMessage } from '../services/api'
+import { sendChatMessage, processAIResponse } from '../services/api'
 
 const messages = ref([])
 const inputMessage = ref('')
@@ -131,47 +131,7 @@ const quickQuestions = [
   '工伤认定需要哪些材料？'
 ]
 
-// 处理AI回复内容，去除</think>等调试信息
-const processAIResponse = (answer) => {
-  if (!answer) return answer
-  
-  let processedAnswer = answer
-  
-  // 1. 去除</think>输出（包括</think>和</think>）
-  processedAnswer = processedAnswer.replace(/</think>/g, '')
-  processedAnswer = processedAnswer.replace(/</think>/g, '')
-  
-  // 2. 去除思考过程等调试信息
-  // 匹配"思考："开头直到下一个空行或文本结束
-  processedAnswer = processedAnswer.replace(/思考：.*?(?=
-\s*
-|$)/gs, '')
-  
-  // 3. 去除工作流节点信息
-  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
-  processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '')
-  processedAnswer = processedAnswer.replace(/工作流步骤.*?(?=
-|$)/g, '')
-  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ')
-  
-  // 4. 清理文本格式
-  processedAnswer = processedAnswer.replace(/
-\s*
-/g, '
 
-')
-  processedAnswer = processedAnswer.replace(/\s+/g, ' ')
-  
-  // 5. 去除多余的空行和空格
-  processedAnswer = processedAnswer.replace(/^\s*
-/gm, '')
-  processedAnswer = processedAnswer.replace(/
-{3,}/g, '
-
-')
-  
-  return processedAnswer.trim()
-}
 
 // 删除所有咨询记录
 const clearMessages = () => {

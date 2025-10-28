@@ -61,28 +61,35 @@ apiClient.interceptors.response.use(
   }
 )
 
-// 处理AI回复内容
-const processAIResponse = (answer) => {
+// 处理AI回复内容 - 统一处理函数
+export const processAIResponse = (answer) => {
   if (!answer) return answer
   
   let processedAnswer = answer
   
-  // 1. 过滤掉工作流运行的节点走势信息
-  // 移除包含节点ID、工作流步骤等调试信息
-  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '') // 移除节点走势箭头
-  processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '') // 移除节点编号
-  processedAnswer = processedAnswer.replace(/工作流步骤.*?(?=\n|$)/g, '') // 移除工作流步骤描述
-  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ') // 移除单独的箭头
+  // 1. 去除</think>输出（包括</think>和</think>）
+  processedAnswer = processedAnswer.replace(/</think>/g, '')
+  processedAnswer = processedAnswer.replace(/</think>/g, '')
   
-  // 2. 完全去除"思考："部分及其内容
-  processedAnswer = processedAnswer.replace(/思考：.*?(?=\n\n|$)/g, '') // 移除思考部分
+  // 2. 去除思考过程等调试信息 - 使用更兼容的方式
+  // 匹配"思考："开头直到下一个空行或文本结束
+  processedAnswer = processedAnswer.replace(/思考：[^\n]*(\n[^\n]*)*?(?=\n\s*\n|$)/g, '')
   
-  // 3. 清理多余的空行和空格
-  processedAnswer = processedAnswer.replace(/\n\s*\n/g, '\n\n') // 保留段落间的空行
-  processedAnswer = processedAnswer.replace(/\s+/g, ' ') // 合并多个空格
-  processedAnswer = processedAnswer.trim() // 去除首尾空格
+  // 3. 去除工作流节点信息 - 使用更兼容的方式
+  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
+  processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '')
+  processedAnswer = processedAnswer.replace(/工作流步骤[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
+  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ')
   
-  return processedAnswer
+  // 4. 清理文本格式 - 使用更兼容的方式
+  processedAnswer = processedAnswer.replace(/\n\s*\n/g, '\n\n')
+  processedAnswer = processedAnswer.replace(/\s+/g, ' ')
+  
+  // 5. 去除多余的空行和空格
+  processedAnswer = processedAnswer.replace(/^\s*\n/gm, '')
+  processedAnswer = processedAnswer.replace(/\n{3,}/g, '\n\n')
+  
+  return processedAnswer.trim()
 }
 
 // 发送聊天消息
