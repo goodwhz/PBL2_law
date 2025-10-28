@@ -61,6 +61,30 @@ apiClient.interceptors.response.use(
   }
 )
 
+// 处理AI回复内容
+const processAIResponse = (answer) => {
+  if (!answer) return answer
+  
+  let processedAnswer = answer
+  
+  // 1. 过滤掉工作流运行的节点走势信息
+  // 移除包含节点ID、工作流步骤等调试信息
+  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '') // 移除节点走势箭头
+  processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '') // 移除节点编号
+  processedAnswer = processedAnswer.replace(/工作流步骤.*?(?=\n|$)/g, '') // 移除工作流步骤描述
+  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ') // 移除单独的箭头
+  
+  // 2. 完全去除"思考："部分及其内容
+  processedAnswer = processedAnswer.replace(/思考：.*?(?=\n\n|$)/g, '') // 移除思考部分
+  
+  // 3. 清理多余的空行和空格
+  processedAnswer = processedAnswer.replace(/\n\s*\n/g, '\n\n') // 保留段落间的空行
+  processedAnswer = processedAnswer.replace(/\s+/g, ' ') // 合并多个空格
+  processedAnswer = processedAnswer.trim() // 去除首尾空格
+  
+  return processedAnswer
+}
+
 // 发送聊天消息
 export const sendChatMessage = async (message) => {
   try {
@@ -105,37 +129,6 @@ export const testApiConnection = async () => {
       error: error
     }
   }
-}
-
-// 处理AI回复内容
-const processAIResponse = (answer) => {
-  if (!answer) return answer
-  
-  let processedAnswer = answer
-  
-  // 1. 过滤掉工作流运行的节点走势信息
-  // 移除包含节点ID、工作流步骤等调试信息
-  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '') // 移除节点走势箭头
-  processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '') // 移除节点编号
-  processedAnswer = processedAnswer.replace(/工作流步骤.*?(?=
-|$)/g, '') // 移除工作流步骤描述
-  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ') // 移除单独的箭头
-  
-  // 2. 在"思考："和后续文字之间添加换行
-  processedAnswer = processedAnswer.replace(/思考：/g, '思考：\
-\
-')
-  
-  // 3. 清理多余的空行和空格
-  processedAnswer = processedAnswer.replace(/
-\s*
-/g, '\
-\
-') // 保留段落间的空行
-  processedAnswer = processedAnswer.replace(/\s+/g, ' ') // 合并多个空格
-  processedAnswer = processedAnswer.trim() // 去除首尾空格
-  
-  return processedAnswer
 }
 
 // 获取应用信息

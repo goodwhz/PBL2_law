@@ -29,7 +29,7 @@
               'max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl',
               message.role === 'user' 
                 ? 'bg-primary-500 text-white rounded-br-none text-base' 
-                : 'bg-gray-100 text-gray-900 rounded-bl-none text-lg font-medium'
+                : 'bg-gray-100 text-gray-900 rounded-bl-none text-xl font-semibold'
             ]">
               <div class="whitespace-pre-wrap leading-relaxed">{{ message.content }}</div>
             </div>
