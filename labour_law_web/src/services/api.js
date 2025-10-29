@@ -101,12 +101,22 @@ export const sendChatMessage = async (message) => {
       inputs: {},
       query: message,
       response_mode: 'blocking',
-      user: 'labour-law-user'
+      user: 'labour-law-user',
+      conversation_id: '', // 确保每次都是新的对话，避免历史干扰
+      auto_generate_name: false
     })
 
     if (response.data && response.data.answer) {
-      // 处理AI回复内容
-      return processAIResponse(response.data.answer)
+      // 处理AI回复内容 - 添加更严格的过滤
+      const rawAnswer = response.data.answer
+      
+      // 检查是否包含工作流节点信息，如果包含则重新请求或返回降级回复
+      if (rawAnswer.includes('工作流节点') || rawAnswer.includes('workflow') || rawAnswer.includes('节点') || rawAnswer.includes('→')) {
+        // 如果检测到工作流信息，返回降级回复
+        return '抱歉，系统正在优化中，请稍后重试。'
+      }
+      
+      return processAIResponse(rawAnswer)
     } else {
       throw new Error('API返回数据格式错误')
     }

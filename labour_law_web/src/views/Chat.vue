@@ -158,29 +158,34 @@ const setQuickQuestion = (question) => {
   messageInput.value?.focus()
 }
 
-// 前端过滤函数 - 屏蔽工作流节点信息
+// 前端过滤函数 - 严格屏蔽工作流节点信息
 const filterAIResponse = (content) => {
   if (!content) return content
   
+  // 首先检查是否包含工作流节点信息
+  const workflowPatterns = [
+    /工作流节点/i,
+    /工作流步骤/i,
+    /\[工作流\]/i,
+    /workflow process/i,
+    /workflow node/i,
+    /workflow step/i,
+    /\[workflow\]/i,
+    /节点\s*\d+/i,
+    /node\s*\d+/i,
+    /\[.*?\]\s*→\s*\[.*?\]/,
+    /→/
+  ]
+  
+  // 如果检测到任何工作流模式，返回降级回复
+  const hasWorkflowInfo = workflowPatterns.some(pattern => pattern.test(content))
+  if (hasWorkflowInfo) {
+    return '抱歉，系统正在优化中，请稍后重试。'
+  }
+  
   let filteredContent = content
   
-  // 1. 过滤工作流节点信息（中文和英文）
-  filteredContent = filteredContent.replace(/工作流节点[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
-  filteredContent = filteredContent.replace(/工作流步骤[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
-  filteredContent = filteredContent.replace(/\[工作流\].*?(?=\n|$)/gi, '')
-  filteredContent = filteredContent.replace(/workflow process[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
-  filteredContent = filteredContent.replace(/workflow node[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
-  filteredContent = filteredContent.replace(/workflow step[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
-  filteredContent = filteredContent.replace(/\[workflow\].*?(?=\n|$)/gi, '')
-  
-  // 2. 过滤节点编号和箭头符号
-  filteredContent = filteredContent.replace(/节点\s*\d+/gi, '')
-  filteredContent = filteredContent.replace(/node\s*\d+/gi, '')
-  filteredContent = filteredContent.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
-  filteredContent = filteredContent.replace(/\s+→\s+/g, ' ')
-  filteredContent = filteredContent.replace(/→/g, '')
-  
-  // 3. 清理多余空行和空格
+  // 清理多余空行和空格
   filteredContent = filteredContent.replace(/\n\s*\n/g, '\n\n')
   filteredContent = filteredContent.replace(/^\s*\n/gm, '')
   filteredContent = filteredContent.replace(/\n{3,}/g, '\n\n')
