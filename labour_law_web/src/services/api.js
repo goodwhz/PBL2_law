@@ -100,10 +100,14 @@ export const sendChatMessage = async (message) => {
     const response = await apiClient.post('/chat-messages', {
       inputs: {},
       query: message,
-      response_mode: 'blocking',
+      response_mode: 'streaming', // 改为流式响应，确保工作流完全完成
       user: 'labour-law-user',
-      conversation_id: '', // 确保每次都是新的对话，避免历史干扰
-      auto_generate_name: false
+      conversation_id: '',
+      auto_generate_name: false,
+      stream_options: {
+        include_usage: false, // 不包含使用情况信息
+        include_workflow: false // 不包含工作流信息
+      }
     })
 
     if (response.data && response.data.answer) {

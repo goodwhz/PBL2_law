@@ -162,35 +162,25 @@ const setQuickQuestion = (question) => {
 const filterAIResponse = (content) => {
   if (!content) return content
   
-  // 首先检查是否包含工作流节点信息
-  const workflowPatterns = [
-    /工作流节点/i,
-    /工作流步骤/i,
-    /\[工作流\]/i,
-    /workflow process/i,
-    /workflow node/i,
-    /workflow step/i,
-    /\[workflow\]/i,
-    /节点\s*\d+/i,
-    /node\s*\d+/i,
-    /\[.*?\]\s*→\s*\[.*?\]/,
-    /→/
-  ]
+  // 检查是否包含工作流节点信息
+  const hasWorkflowInfo = content.includes('workflow process') || 
+                         content.includes('workflow node') || 
+                         content.includes('workflow step') || 
+                         content.includes('→') || 
+                         content.includes('节点')
   
-  // 如果检测到任何工作流模式，返回降级回复
-  const hasWorkflowInfo = workflowPatterns.some(pattern => pattern.test(content))
   if (hasWorkflowInfo) {
-    return '抱歉，系统正在优化中，请稍后重试。'
+    return '系统正在处理中，请稍候...'
   }
   
-  let filteredContent = content
-  
   // 清理多余空行和空格
-  filteredContent = filteredContent.replace(/\n\s*\n/g, '\n\n')
-  filteredContent = filteredContent.replace(/^\s*\n/gm, '')
-  filteredContent = filteredContent.replace(/\n{3,}/g, '\n\n')
+  let filteredContent = content
+    .replace(/\n\s*\n/g, '\n\n')
+    .replace(/^\s*\n/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
   
-  return filteredContent.trim()
+  return filteredContent
 }
 
 const sendMessage = async () => {
