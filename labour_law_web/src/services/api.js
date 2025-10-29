@@ -105,7 +105,8 @@ export const sendChatMessage = async (message) => {
       conversation_id: '',
       auto_generate_name: false,
       metadata: {
-        suppress_workflow: true // 明确要求抑制工作流输出
+        suppress_workflow: true, // 明确要求抑制工作流输出
+        strict_mode: true // 启用严格模式，确保后端完全抑制工作流信息
       },
       stream_options: {
         include_usage: false,
@@ -121,15 +122,21 @@ export const sendChatMessage = async (message) => {
         /workflow[\s\S]*?process/i,
         /节点[\s\S]*?→/i,
         /\[.*?\][\s\S]*?→/,
-        /(stage|phase|step)\s*\d+/i
+        /(stage|phase|step)\s*\d+/i,
+        /工作流[\s\S]*?节点/i,
+        /工作流[\s\S]*?步骤/i,
+        /工作流[\s\S]*?阶段/i,
+        /workflow[\s\S]*?node/i,
+        /workflow[\s\S]*?step/i,
+        /workflow[\s\S]*?stage/i
       ];
       
       const isWorkflowOutput = workflowPatterns.some(pattern => 
         pattern.test(rawAnswer)
       ) || [
-        'workflow', 'process', 'node', 'step', 'stage',
-        '节点', '流程', '阶段', '步骤', '→', '⇒', '⇨'
-      ].some(keyword => rawAnswer.includes(keyword));
+        'workflow', 'process', 'node', 'step', 'stage', 'phase',
+        '节点', '流程', '阶段', '步骤', '→', '⇒', '⇨', '工作流', '任务流'
+      ].some(keyword => rawAnswer.toLowerCase().includes(keyword.toLowerCase()));
       
       if (isWorkflowOutput) {
         return '系统正在准备最终答案，请稍候...';
