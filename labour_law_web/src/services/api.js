@@ -100,29 +100,44 @@ export const sendChatMessage = async (message) => {
     const response = await apiClient.post('/chat-messages', {
       inputs: {},
       query: message,
-      response_mode: 'streaming', // 改为流式响应，确保工作流完全完成
+      response_mode: 'blocking', // 改回阻塞模式确保完整执行
       user: 'labour-law-user',
       conversation_id: '',
       auto_generate_name: false,
+      metadata: {
+        suppress_workflow: true // 明确要求抑制工作流输出
+      },
       stream_options: {
-        include_usage: false, // 不包含使用情况信息
-        include_workflow: false // 不包含工作流信息
+        include_usage: false,
+        include_workflow: false
       }
     })
 
     if (response.data && response.data.answer) {
-      // 处理AI回复内容 - 添加更严格的过滤
-      const rawAnswer = response.data.answer
+      const rawAnswer = response.data.answer;
       
-      // 检查是否包含工作流节点信息，如果包含则重新请求或返回降级回复
-      if (rawAnswer.includes('工作流节点') || rawAnswer.includes('workflow') || rawAnswer.includes('节点') || rawAnswer.includes('→')) {
-        // 如果检测到工作流信息，返回降级回复
-        return '抱歉，系统正在优化中，请稍后重试。'
+      // 扩展的工作流检测模式
+      const workflowPatterns = [
+        /workflow[\s\S]*?process/i,
+        /节点[\s\S]*?→/i,
+        /\[.*?\][\s\S]*?→/,
+        /(stage|phase|step)\s*\d+/i
+      ];
+      
+      const isWorkflowOutput = workflowPatterns.some(pattern => 
+        pattern.test(rawAnswer)
+      ) || [
+        'workflow', 'process', 'node', 'step', 'stage',
+        '节点', '流程', '阶段', '步骤', '→', '⇒', '⇨'
+      ].some(keyword => rawAnswer.includes(keyword));
+      
+      if (isWorkflowOutput) {
+        return '系统正在准备最终答案，请稍候...';
       }
       
-      return processAIResponse(rawAnswer)
+      return processAIResponse(rawAnswer);
     } else {
-      throw new Error('API返回数据格式错误')
+      throw new Error('API返回数据格式错误: ' + JSON.stringify(response.data));
     }
   } catch (error) {
     console.error('发送聊天消息失败:', error)

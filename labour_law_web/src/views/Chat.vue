@@ -158,29 +158,43 @@ const setQuickQuestion = (question) => {
   messageInput.value?.focus()
 }
 
-// 前端过滤函数 - 严格屏蔽工作流节点信息
+// 终极工作流信息过滤 (增强版)
 const filterAIResponse = (content) => {
-  if (!content) return content
+  if (!content) return '系统响应为空，请重试';
   
-  // 检查是否包含工作流节点信息
-  const hasWorkflowInfo = content.includes('workflow process') || 
-                         content.includes('workflow node') || 
-                         content.includes('workflow step') || 
-                         content.includes('→') || 
-                         content.includes('节点')
+  // 扩展的工作流检测模式
+  const workflowPatterns = [
+    /workflow[\s\S]*?process/i,
+    /节点[\s\S]*?→/i,
+    /\[.*?\][\s\S]*?→/,
+    /(stage|phase|step)\s*\d+/i,
+    /processing\s*:/i,
+    /generating\s*response/i
+  ];
   
-  if (hasWorkflowInfo) {
-    return '系统正在处理中，请稍候...'
+  const workflowKeywords = [
+    'workflow', 'process', 'node', 'step', 'stage', 'phase',
+    '节点', '流程', '阶段', '步骤', '进度', '→', '⇒', '⇨',
+    'progress', 'processing', 'generating', 'building', 'assembling'
+  ];
+  
+  const isWorkflowOutput = workflowPatterns.some(pattern => 
+    pattern.test(content)
+  ) || workflowKeywords.some(keyword => 
+    content.toLowerCase().includes(keyword.toLowerCase())
+  );
+  
+  if (isWorkflowOutput) {
+    return '系统正在准备最终答案，请稍候...';
   }
   
-  // 清理多余空行和空格
-  let filteredContent = content
+  // 增强的内容清理
+  return content
+    .replace(/\[.*?\][\s\S]*?→/g, '')
+    .replace(/\b(workflow|process|节点)[\s\S]*?\n/g, '')
     .replace(/\n\s*\n/g, '\n\n')
-    .replace(/^\s*\n/gm, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
-  
-  return filteredContent
+    .replace(/^\s+|\s+$/gm, '')
+    .trim();
 }
 
 const sendMessage = async () => {
