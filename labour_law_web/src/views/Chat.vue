@@ -158,26 +158,13 @@ const setQuickQuestion = (question) => {
   messageInput.value?.focus()
 }
 
-// 前端过滤函数 - 确保工作流节点信息和</think>标记被隐藏
+// 前端过滤函数 - 清理多余空行和空格
 const filterAIResponse = (content) => {
   if (!content) return content
   
   let filteredContent = content
   
-  // 1. 过滤</think>标记及其内容
-  filteredContent = filteredContent.replace(/</think>[^]*?</think>/gs, '')
-  filteredContent = filteredContent.replace(/</think>/g, '')
-  
-  // 2. 过滤工作流节点信息
-  filteredContent = filteredContent.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
-  filteredContent = filteredContent.replace(/节点\s*\d+/g, '')
-  filteredContent = filteredContent.replace(/工作流步骤[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
-  filteredContent = filteredContent.replace(/工作流节点[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
-  filteredContent = filteredContent.replace(/\[工作流\].*?(?=\n|$)/g, '')
-  filteredContent = filteredContent.replace(/\s+→\s+/g, ' ')
-  filteredContent = filteredContent.replace(/→/g, '')
-  
-  // 3. 清理多余空行和空格
+  // 清理多余空行和空格
   filteredContent = filteredContent.replace(/\n\s*\n/g, '\n\n')
   filteredContent = filteredContent.replace(/^\s*\n/gm, '')
   filteredContent = filteredContent.replace(/\n{3,}/g, '\n\n')

@@ -67,28 +67,11 @@ export const processAIResponse = (answer) => {
   
   let processedAnswer = answer
   
-  // 1. 去除</think>输出以及夹在其中的内容
-  processedAnswer = processedAnswer.replace(/</think>.*?</think>/gs, '')
-  processedAnswer = processedAnswer.replace(/</think>/g, '')
-  
-  // 2. 去除思考过程等调试信息 - 使用更兼容的方式
-  // 匹配"思考："开头直到下一个空行或文本结束
-  processedAnswer = processedAnswer.replace(/思考：[^\n]*(\n[^\n]*)*?(?=\n\s*\n|$)/g, '')
-  
-  // 3. 去除工作流节点信息 - 加强过滤
-  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
-  processedAnswer = processedAnswer.replace(/节点\s*\d+/g, '')
-  processedAnswer = processedAnswer.replace(/工作流步骤[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
-  processedAnswer = processedAnswer.replace(/工作流节点[^\n]*(\n[^\n]*)*?(?=\n|$)/g, '')
-  processedAnswer = processedAnswer.replace(/\[工作流\].*?(?=\n|$)/g, '')
-  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ')
-  processedAnswer = processedAnswer.replace(/→/g, '')
-  
-  // 4. 清理文本格式 - 使用更兼容的方式
+  // 清理文本格式 - 使用更兼容的方式
   processedAnswer = processedAnswer.replace(/\n\s*\n/g, '\n\n')
   processedAnswer = processedAnswer.replace(/\s+/g, ' ')
   
-  // 5. 去除多余的空行和空格
+  // 去除多余的空行和空格
   processedAnswer = processedAnswer.replace(/^\s*\n/gm, '')
   processedAnswer = processedAnswer.replace(/\n{3,}/g, '\n\n')
   
