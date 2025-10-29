@@ -67,11 +67,27 @@ export const processAIResponse = (answer) => {
   
   let processedAnswer = answer
   
-  // 清理文本格式 - 使用更兼容的方式
+  // 1. 过滤工作流节点信息（中文和英文）
+  processedAnswer = processedAnswer.replace(/工作流节点[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
+  processedAnswer = processedAnswer.replace(/工作流步骤[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
+  processedAnswer = processedAnswer.replace(/\[工作流\].*?(?=\n|$)/gi, '')
+  processedAnswer = processedAnswer.replace(/workflow process[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
+  processedAnswer = processedAnswer.replace(/workflow node[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
+  processedAnswer = processedAnswer.replace(/workflow step[^\n]*(\n[^\n]*)*?(?=\n|$)/gi, '')
+  processedAnswer = processedAnswer.replace(/\[workflow\].*?(?=\n|$)/gi, '')
+  
+  // 2. 过滤节点编号和箭头符号
+  processedAnswer = processedAnswer.replace(/节点\s*\d+/gi, '')
+  processedAnswer = processedAnswer.replace(/node\s*\d+/gi, '')
+  processedAnswer = processedAnswer.replace(/\[.*?\]\s*→\s*\[.*?\]/g, '')
+  processedAnswer = processedAnswer.replace(/\s+→\s+/g, ' ')
+  processedAnswer = processedAnswer.replace(/→/g, '')
+  
+  // 3. 清理文本格式
   processedAnswer = processedAnswer.replace(/\n\s*\n/g, '\n\n')
   processedAnswer = processedAnswer.replace(/\s+/g, ' ')
   
-  // 去除多余的空行和空格
+  // 4. 去除多余的空行和空格
   processedAnswer = processedAnswer.replace(/^\s*\n/gm, '')
   processedAnswer = processedAnswer.replace(/\n{3,}/g, '\n\n')
   
