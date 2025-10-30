@@ -71,9 +71,9 @@
               <textarea
                 v-model="inputMessage"
                 ref="messageInput"
-                placeholder="请输入您的劳动法问题..."
-                class="input-field resize-none"
-                rows="2"
+                placeholder="请输入您的劳动法问题（例如：劳动合同、加班工资等）..."
+                class="input-field resize-none w-full px-4 py-3 border-2 border-primary-500 rounded-lg focus:border-primary-600 focus:ring-2 focus:ring-primary-200 transition-colors duration-200 text-gray-800 bg-white shadow-sm"
+                rows="3"
                 :disabled="isLoading"
               ></textarea>
             </div>
@@ -81,14 +81,19 @@
               type="submit"
               :disabled="!inputMessage.trim() || isLoading"
               :class="[
-                'btn-primary self-end px-6 py-3',
+                'self-end px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg shadow-md transition-colors duration-200',
                 (!inputMessage.trim() || isLoading) && 'opacity-50 cursor-not-allowed'
               ]"
             >
               <svg v-if="isLoading" class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
               </svg>
-              <span v-else>发送</span>
+              <span v-else class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+                <span>发送问题</span>
+              </span>
             </button>
           </form>
         </div>
