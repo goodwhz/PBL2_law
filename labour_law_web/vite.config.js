@@ -9,7 +9,18 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    emptyOutDir: true,
+    minify: 'terser',
     sourcemap: false,
-    emptyOutDir: true // 确保每次构建前清空 dist 目录
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vue: ['vue'],
+          router: ['vue-router'],
+          state: ['pinia'],
+          vendor: ['axios', '@heroicons/vue']
+        }
+      }
+    }
   }
 })

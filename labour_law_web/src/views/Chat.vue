@@ -174,7 +174,22 @@ const setQuickQuestion = (question) => {
 const filterAIResponse = (content) => {
   if (!content) return '系统响应为空，请重试';
   
-  // 扩展的工作流检测模式
+  // 扩展的工作流检测模{
+  "version": 2,
+  "builds": [
+    {
+      "src": "vite.config.js",
+      "use": "@vercel/static-build",
+      "config": {
+        "outputDirectory": "dist"
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/.*", "dest": "/index.html" }  // 单页应用路由
+  ]
+}
+式
   const workflowPatterns = [
     /workflow[\s\S]*?process/i,
     /节点[\s\S]*?→/i,
