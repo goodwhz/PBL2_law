@@ -68,14 +68,21 @@
         <div class="border-t border-gray-200 p-4 bg-gray-50">
           <form @submit.prevent="sendMessage" class="flex space-x-4">
             <div class="flex-1">
+              <div class="relative w-full">
               <textarea
                 v-model="inputMessage"
                 ref="messageInput"
                 placeholder="请输入您的劳动法问题（例如：劳动合同、加班工资等）..."
-                class="input-field resize-none w-full px-4 py-3 border-2 border-primary-500 rounded-lg focus:border-primary-600 focus:ring-2 focus:ring-primary-200 transition-colors duration-200 text-gray-800 bg-white shadow-sm"
+                class="input-field resize-none w-full px-4 py-3 border-2 border-primary-500 rounded-lg focus:border-primary-600 focus:ring-2 focus:ring-primary-200 transition-colors duration-200 text-gray-800 bg-white shadow-lg hover:shadow-xl"
                 rows="3"
                 :disabled="isLoading"
               ></textarea>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+              </div>
+            </div>
             </div>
             <button
               type="submit"
